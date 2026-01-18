@@ -1,0 +1,70 @@
+/* General page spacing */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.site-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    padding-top: 10px;
+    padding-bottom: 5;
+    text-align: center;
+}
+
+/* Navigation links inside header */
+.site-header nav a {
+    color: rgb(21, 27, 221);
+    margin: 10px;
+    text-decoration: none;
+}
+
+/* Search section */
+
+.search-section {
+    display: flex;
+    flex-direction: column;       
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5px 0;
+
+}
+
+.search-section h2 {
+    display: flex;
+    justify-content: center;
+}
+
+.search-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+    gap: 10px;
+    margin: 5px 0;
+
+}
+
+/* Input styling */
+.search-section input {
+    padding: 10px;
+    width: 300px;
+    font-size: 16px;
+}
+
+/* Button styling */
+.search-section button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Main content */
+.main-content {
+    padding: 20px;
+    text-align: center;
+}

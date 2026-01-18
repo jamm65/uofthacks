@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <h1>Recipe Tool</h1>
+        <nav>
+            <!-- <a href="#section1">Home</a> -->
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main>
+        <!-- Seach Section -->
+        <section class="search-section">
+            <h2>Start searching...</h2>
+            <section class="search-search">
+                <form action="/search-endpoint" method="GET">
+
+                <input type="text" id="searchQuery" name="query" placeholder="Enter YouTube URL...">
+
+                <button type="submit">Submit!</button>
+                </form>
+            </section>
+        </section>
+    </main>
+
+</body>
+</html>
