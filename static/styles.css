@@ -42,17 +42,25 @@ body {
 
 .search-search {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;  
     gap: 10px;
     margin: 5px 0;
+}
 
+/* Form styling */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 /* Input styling */
 .search-section input {
     padding: 10px;
-    width: 300px;
+    width: 400px;
     font-size: 16px;
 }
 

@@ -9,7 +9,7 @@
 <body>
     <!-- Header -->
     <header class="site-header">
-        <h1>Recipe Tool</h1>
+        <h1>Recipe Helper</h1>
         <nav>
             <!-- <a href="#section1">Home</a> -->
         </nav>
@@ -20,16 +20,22 @@
         <!-- Seach Section -->
         <section class="search-section">
             <h2>Start searching...</h2>
-            <section class="search-search">
-                <form action="/search-endpoint" method="GET">
-
+            <form action="/search-endpoint" method="GET" class="search-form">
                 <input type="text" id="searchQuery" name="query" placeholder="Enter YouTube URL...">
-
-                <button type="submit">Submit!</button>
-                </form>
-            </section>
+                <button type="submit" id="submitBtn">Submit!</button>
+            </form>
+            <div id="loadingMessage" style="display: none; margin-top: 20px; font-size: 18px; color: #4CAF50;">
+                Loading the video...
+            </div>
         </section>
     </main>
+
+    <script>
+        document.querySelector('.search-form').addEventListener('submit', function() {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('loadingMessage').style.display = 'block';
+        });
+    </script>
 
 </body>
 </html>

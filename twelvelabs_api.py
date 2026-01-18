@@ -41,14 +41,14 @@ def check_and_upload_video(client, index, file_name: str) -> object:
         print(f"{file_name} already indexed: {indexed_asset_id}")
         return existing_indexed[0]
     else:
-        print(f"{file_name} not found, uploading...")
+        print(f"static\\videos\\{file_name} not found, uploading...")
         return upload_video(client, index, file_name)
 
 def upload_video(client, index, file_name: str):
     # create the asset
     asset = client.assets.create(
         method="direct",
-        file=open(file_name, "rb")
+        file=open(f"static\\videos\\{file_name}", "rb")
     )
     print(f"Created asset: id={asset.id}")
 
@@ -138,7 +138,6 @@ def main():
             print(f"  Rank: {clip.rank}")  # Relevance ranking (1 = most relevant)
             print(f"  Time: {start_min}m {start_sec}s - {end_min}m {end_sec}s")  # When this moment occurs in the video
             print()
-   
     print("Exiting program.")
 
 

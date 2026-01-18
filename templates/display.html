@@ -1,23 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Local Video Example</title>
-</head>
-<body>
-
-  <h1>My Local Video</h1>
-  
-  <video width="640" height="360" controls>    
-    <source src="5 Second Countdown HD.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video> -->
-
-  <!-- <video controls width="640">
-    <source src="{{ url_for('static', filename='videos/5 Second Countdown HD.mp4') }}" type="video/mp4">
-</video> -->
-
-
 </body>
 </html>
 
@@ -71,78 +51,174 @@
             width: 100%;
             height: 100%;
         }
+
+        .bottom-left-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        #bottom-left-text {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        #search-input {
+            padding: 8px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        #ask-button {
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #ask-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <div class="grid-container">
         <!-- Top-left: Video -->
         <div class="video-section">
-            <video controls>
-                <source src="{{ url_for('static', filename='videos/5 Second Countdown HD.mp4') }}" type="video/mp4">
+            <video id="myVideo" controls>
+                <source src="{{ url_for('static', filename='videos/' + filename) }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
 
             <script>
               const video = document.getElementById('myVideo')
-              startTime = 10;
-              endTime = video.duration;
+              let startTime = 0;
+              let endTime = 0;
+
+              function updateVideoTime(newStartTime, newEndTime) {
+                startTime = newStartTime;
+                endTime = newEndTime;
+
+                video.currentTime = startTime;
+                video.play();
+              }
 
               video.addEventListener('timeupdate', function() {
-                if (video.currrentTime != startTime) {
-                  video.currentTime = startTime;
-                }
-                video.play();
-                if (video.currentTime > endTime && !video.paused) {
+                if (endTime > 0 && video.currentTime >= endTime) {
                   video.pause();
                 }
+              });
+
+              async function checkSearchResult() {
+                try {
+                  const response = await fetch('/get-search-result');
+                  const data = await response.json();
+                  if (data.finished) {
+                    updateVideoTime(data.start, data.end);
+                  }
+                } catch (err) {
+                  console.error('Error fetching search result:', err);
+                }
+              }
+
+              // Start playing video immediately when it's loaded
+              video.addEventListener('loadedmetadata', function() {
+                endTime = video.duration;
+                video.play();
               });
             </script>
         </div>
 
         <!-- Bottom-left: Dynamic Text -->
-        <div class="bottom-left" id="bottom-left-text">
-            Loading bottom-left text...
+        <div class="bottom-left" id="bottom-left-container">
+            <div id="bottom-left-text">
+                Loading bottom-left text...
+            </div>
+            <div class="input-section">
+                <button id="ask-button">Ask</button>
+                <textarea id="search-input" placeholder="Enter your question..."></textarea>
+            </div>
         </div>
 
         <!-- Right-side: Dynamic Text -->
         <div class="right-section" id="right-text">
-          {{ right }}
         </div>
 
         
     </div>
 
     <!-- JS for updating dynamic content -->
-<script>
+    <script>
         async function updateText() {
             try {
-                const response = await fetch('/get-data'); // Flask endpoint
+                const response = await fetch('/get-summary');
                 const data = await response.json();
 
                 document.getElementById('bottom-left-text').innerText = data.bottom_left;
                 document.getElementById('right-text').innerText = data.right;
+
+                if (data.finished) {
+                    clearInterval(intervalId);
+                    console.log("Backend says done, stopping fetch");
+                }
             } catch (err) {
-                console.error('Error fetching data:', err);
+                console.error(err);
+                clearInterval(intervalId);
             }
         }
 
-        // Update every 2 seconds
-        setInterval(updateText, 2000);
-
-        // Initial load
+        const intervalId = setInterval(updateText, 500);
         updateText();
+
+        // Handle ask button click
+        document.getElementById('ask-button').addEventListener('click', async function() {
+            const inputText = document.getElementById('search-input').value;
+            try {
+                const response = await fetch('/search-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: inputText })
+                });
+                const data = await response.json();
+                console.log('Response:', data);
+                document.getElementById('search-input').value = '';
+
+                // Poll for search result every 500ms until search is finished
+                const searchPollInterval = setInterval(async function() {
+                    try {
+                        const response = await fetch('/get-search-result');
+                        const data = await response.json();
+                        console.log('Search result:', data);
+                        
+                        if (data.finished) {
+                            await checkSearchResult();
+                            clearInterval(searchPollInterval);
+                            console.log('Search finished, video updated');
+                        }
+                    } catch (err) {
+                        console.error('Error polling search result:', err);
+                        clearInterval(searchPollInterval);
+                    }
+                }, 500);
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        });
     </script>
 
-    <!-- <script>
-      async function updateSummary() {
-          const res = await fetch('/get-summary');
-          const data = await res.json();
-          document.getElementById('right-text').innerText = data.right;
-      }
-
-      // Poll every 1 second
-      setInterval(updateSummary, 1000);
-      updateSummary();
-      </script> -->
 </body>
 </html>
